@@ -4,3 +4,5 @@
 *.vmdk
 *.vhd
 *.log
+.gitignore
+.DS_Store
