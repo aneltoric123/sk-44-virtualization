@@ -1,0 +1,29 @@
+// Ships the systemd journal (Rails, Puma, Postgres, Redis, ...) and nginx logs to Loki.
+loki.relabel "journal" {
+  forward_to = []
+  rule {
+    source_labels = ["__journal__systemd_unit"]
+    target_label  = "unit"
+  }
+}
+
+loki.source.journal "journal" {
+  forward_to    = [loki.write.local.receiver]
+  relabel_rules = loki.relabel.journal.rules
+  labels        = { job = "systemd-journal" }
+}
+
+local.file_match "nginx" {
+  path_targets = [{ "__path__" = "/var/log/nginx/*.log", "job" = "nginx" }]
+}
+
+loki.source.file "nginx" {
+  targets    = local.file_match.nginx.targets
+  forward_to = [loki.write.local.receiver]
+}
+
+loki.write "local" {
+  endpoint {
+    url = "http://127.0.0.1:3100/loki/api/v1/push"
+  }
+}

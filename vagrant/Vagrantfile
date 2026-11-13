@@ -1,0 +1,31 @@
+# -*- mode: ruby -*-
+# Full Rails stack: nginx(TLS) + Puma/Rails + PostgreSQL + Redis (+Sidekiq)
+# + Prometheus/Grafana/Loki monitoring. Run: `vagrant up`
+#
+
+HTTPS_PORT = ENV.fetch("HTTPS_PORT", "443")
+PROVISION_ENV = {
+  "DOMAIN"            => ENV.fetch("DOMAIN", "myapp.local"),
+  "TLS_MODE"          => ENV.fetch("TLS_MODE", "mkcert"),
+  "ACME_EMAIL"        => ENV.fetch("ACME_EMAIL", ""),
+  "CF_API_TOKEN"      => ENV.fetch("CF_API_TOKEN", ""),
+  "PUBLIC_HTTPS_PORT" => HTTPS_PORT,
+}
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-24.04"
+  config.vm.hostname = "rails-app"
+
+  config.vm.network "private_network", type: "dhcp"
+
+  %w[00-base 10-postgres 20-redis 30-ruby-app 40-nginx-tls 50-monitoring 99-smoketest].each do |s|
+    config.vm.provision s, type: "shell", path: "provision/#{s}.sh", env: PROVISION_ENV
+  end
+
+  config.vm.provider "vmware_desktop" do |v|
+    v.gui = false
+    v.memory = 4096
+    v.cpus = 2
+    v.linked_clone = true
+  end
+end

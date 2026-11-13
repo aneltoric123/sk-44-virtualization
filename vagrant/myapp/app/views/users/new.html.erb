@@ -1,0 +1,49 @@
+<% content_for :navbar do %>
+  <!-- Nothing here, so the navbar won't be displayed on this page -->
+<% end %>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+       
+        <div class="card-header bg-primary text-white">
+          <div class="d-flex align-items-center justify-content-between">
+                <%= image_tag('Logo_of_Twitter.svg.png', alt: 'Twitter Logo', class: 'twitter-logo') %>
+
+            <h1 class="text-center">Register</h1>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <%= form_with(model: @user, url: users_path, class: 'mt-3') do |form| %>
+            <div class="form-group">
+              <%= form.label :username %>
+              <%= form.text_field :username, class: 'form-control', required: true %>
+            </div>
+
+            <div class="form-group">
+              <%= form.label :email %>
+              <%= form.email_field :email, class: 'form-control', required: true %>
+            </div>
+
+            <div class="form-group">
+              <%= form.label :password %>
+              <%= form.password_field :password, class: 'form-control', required: true %>
+            </div>
+
+            <div class="form-group">
+              <%= form.label :password_confirmation %>
+              <%= form.password_field :password_confirmation, class: 'form-control', required: true %>
+            </div>
+
+            <%= form.submit 'Register', class: 'btn btn-success btn-block mt-4' %>
+          <% end %>
+        </div>
+
+        <div class="card-footer text-center">
+          <%= link_to 'Go back to login', login_path, class: 'btn btn-secondary' %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
