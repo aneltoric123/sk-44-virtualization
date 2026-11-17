@@ -79,7 +79,7 @@ chmod 600 /etc/myapp/grafana.env
 cp "$SRC_CONF/grafana/datasources.yml" /etc/grafana/provisioning/datasources/myapp.yml
 cp "$SRC_CONF/grafana/dashboards.yml"  /etc/grafana/provisioning/dashboards/myapp.yml
 
-# Community dashboards: Node Exporter Full, PostgreSQL, Redis (best effort)
+
 install -d -o grafana -g grafana /var/lib/grafana/dashboards
 for d in 1860:node 9628:postgres 11835:redis; do
   id=${d%%:*}; name=${d##*:}
