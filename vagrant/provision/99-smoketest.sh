@@ -37,5 +37,12 @@ echo
 echo "App:        $(public_url)/"
 echo "Grafana:    $(public_url)/grafana/      (admin / $ADMIN_PASS)"
 echo "Prometheus: $(public_url)/prometheus/   (admin / $ADMIN_PASS)"
-[ "$TLS_MODE" = mkcert ] && echo "Trust the CA on your host: ./certs/rootCA.pem, and add '127.0.0.1 $DOMAIN' to your hosts file."
-exit 0
+
+NAT_IF=$(ip route show default | awk '{print $5; exit}')
+VM_IP=$(ip -4 -o addr show scope global | awk -v nat="$NAT_IF" '$2 != nat {split($4,a,"/"); print a[1]; exit}')
+VM_IP=${VM_IP:-$(ip -4 -o addr show scope global | awk '{split($4,a,"/"); print a[1]; exit}')}
+
+if [ "$TLS_MODE" = mkcert ]; then
+  echo "Trust the CA on your host: ./certs/rootCA.pem"
+  echo "Add this to your hosts file:  $VM_IP  $DOMAIN"
+fi
