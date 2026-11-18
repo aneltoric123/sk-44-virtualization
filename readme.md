@@ -2,32 +2,33 @@
 
 # 1.Namen projekta
 
-Cilj je bil da pokažemo kako lahko spletno aplikacijo deployamo varno,večktrat z uporabo samo enega ukaza na MAC-OS.
+Cilj je bil da pokažemo kako lahko spletno aplikacijo deployamo varno in večktrat z uporabo samo enega ukaza na MAC-OS.
 Za virtualko uporabimo Ubuntu 24.04 box in provision skripte ki:
-  - inštalira in konfigurira vsak servis, ki ga aplikacija potrebuje (PostgreSQL,Redis,Ruby,Puma,nginx)
-  - inštalira celoten monitoring in logging stack
-  - verificira da vse dela z avtomatiziranim "smoke test"
-  - uporabi različne varnostne mehanizme (HTTPS,protekcije pred brute force,firewall,SSH)
-  - celotna aplikacija se lahko izbriše/ustavi in ponovno zgradi in skripte so varne da jih ponovno zaženemo ter je vgrajena trajnost(podatki shranijo ob ponovnem zagonu - samo brez --provision)
+  - Inštalira in konfigurira vsak servis, ki ga aplikacija potrebuje (PostgreSQL,Redis,Ruby,Puma,nginx)
+  - Inštalira celoten monitoring in logging stack
+  - Verificira da vse dela z avtomatiziranim "smoke test"
+  - Uporabi različne varnostne mehanizme (HTTPS,protekcije pred brute force,firewall,SSH)
+  - Celotna aplikacija se lahko izbriše/ustavi in ponovno zgradi
+  - Skripte so varne, da jih ponovno zaženemo ter je vgrajena trajnost(podatki shranijo ob ponovnem zagonu - samo brez --provision)
 
 
 # 2.Dodatne funkcionalnosti (bolj podbrobno)
 
 ## Avtomatzacija
 
-  - oštevilčene modularne provizije 00-99,vsak lahko zaženemo posebej z vagrant provision --provision-with <ime>
-  - ponovni zagon skript ne duplicira konfiguracije ali regenerira obstoječe skrivnosti/ključe
-  - vgrajen smoke-test ki pregleda in testira provisioing in če je kaj narobe potem pade
-  - avtomatski sidekiq detekcija: če gemfile vsebuje sidekiq,"worker service" se kreira
+  - Oštevilčene modularne provizije 00-99,vsak lahko zaženemo posebej z vagrant provision --provision-with ime_provision
+  - Ponovni zagon skript ne duplicira konfiguracije ali regenerira obstoječe skrivnosti/ključe
+  - Vgrajen smoke-test. ki pregleda in testira provisioing, če je kaj narobe potem pade
+  - Avtomatski sidekiq detekcija: če gemfile vsebuje sidekiq,"worker service" se kreira
 
 ## Varnost
 
-  - **Netwowrk**: UFW firewall blokira ves vhodni promet razen na vratih 22,80,443,baze in monitoring servisi poslušajo samo na localhost,fail2ban za SSH in nginx basic-auth
+  - **Netwowrk**: UFW firewall blokira ves vhodni promet razen na vratih 22,80,443,baze in monitoring; servisi poslušajo samo na localhost,fail2ban za SSH in nginx basic-auth
   - **SSH**: Root login disabled,max 4 poskusi,avtentikacijo samo z ključem
   - **Brute force zaščita**: fail2ban prepoveduje dostop za  sshd in nginx-http-auth(5 poskusov - 1 hour ban)
-  - **Skrivnosti**: Naključno generirane na okolje;nikoli "hardcoded"(Bza,Redis,SECRET_KEY_BASE in admin gesla),shranjeni v /etc/myapp z omejenimi pravicami(root:deploy 640 env file,root 600 credentials file)
-  - **TLS**: Ves zunanji promet iz HTTPS;HTTP preusmeri na HTTPS,2 načina mkcert(lokalno zaupan CA za development) in letsencrypt(pravi certifikati prek Cloudflare DNS challenge z auto-renewa- hook)
-  - **Kernel**: SYN cookies,reverse-path filterting in ICMP redirect protekcija prek sysctl
+  - **Skrivnosti**: Naključno generirane na okolje;nikoli "hardcoded"(Baza,Redis,SECRET_KEY_BASE in admin gesla),shranjeni v /etc/myapp z omejenimi pravicami(root:deploy 640 env file,root 600 credentials file)
+  - **TLS**: Ves zunanji promet iz HTTPS; HTTP preusmeri na HTTPS,2 načina mkcert(lokalno zaupan CA za development) in letsencrypt(pravi certifikati prek Cloudflare DNS challenge z auto-renewal hook)
+  - **Kernel**: SYN cookies,reverse-path filtering in ICMP redirect protekcija prek sysctl
 ## Monitoring and Logging
 
   - Centraliziran logging z Loki in Grafana Alloy(journal in log shipping)
@@ -47,7 +48,7 @@ Za virtualko uporabimo Ubuntu 24.04 box in provision skripte ki:
 
 ## Backups
 
-  - Vsakodnevni pg_dump prek systemd timerja,7 dnevnno zadržanje,ena varnostna kopija ustvarjena ob provisionu
+  - Vsakodnevni pg_dump prek systemd timerja,7 dnevnno zadržanje podatkov,ena varnostna kopija ustvarjena ob provisionu
 
 ## Prilagajanje virov
 
@@ -60,16 +61,16 @@ Za virtualko uporabimo Ubuntu 24.04 box in provision skripte ki:
   - Grafana health prek nginx
   - PostgreSQL query in Redis overjen PING
   - HTTPS app(/up) in HTTP -> HTTPS redirect
-  - firewall je aktiven in varnostna kopija db obstaja
-  - Prometheus potrebuje avtentikacijo in delo z njo
-  - all Prometheus targets up
+  - Firewall je aktiven in varnostna kopija baze obstaja
+  - Prometheus potrebuje avtentikacijo in pote lahko delamo z njo
+  - All Prometheus targets up
 
 # 3.Potrebe
 
   - macOS
   - Vagrant z Vagrant VMWare utiliy(lahko uporabite virtualbox samo morate spremeniti vagrant file in ponovno zagnati)
   - VMWare Fusion/Virtual box
-  - Vagrant in vagrant plugins(vagrant plugin install vagrant-vmware-desktop)
+  - Vagrant in vagrant plugins(```vagrant plugin install vagrant-vmware-desktop```)
   - Dostop do interneta na prvem zagonu ter še dovolj CPU in RAM.
 
 # 4.Vagrant Setup
@@ -77,14 +78,15 @@ Za virtualko uporabimo Ubuntu 24.04 box in provision skripte ki:
 ## Git clone
 
 ```bash
-
-git clone <https://github.com/aneltoric123/sk-44-virtualization>
-
+git clone https://github.com/aneltoric123/sk-44-virtualization
 cd vagrant  
 vagrant up --provision
 ```
 
-## Sprva vam ne bo delalo in bo trajalo kar precej časa za zagon,dokler ne spremenite /etc/hosts in dodate kar vam piše v zadnji vrstici ukaza.
+### Sprva vam ne bo delalo in bo trajalo kar precej časa za zagon,dokler ne spremenite /etc/hosts in dodate kar vam piše v zadnji vrstici ukaza.
+```bash
+sudo nano /etc/hosts
+```
 
 ## Zaupamo certifikatom (da pokaže validen "lock" in morate ponovni zagnati browser)
 ```bash
@@ -95,17 +97,17 @@ sudo security add-trusted-cert -d -r trustRoot \
 
 **https://myapp.local/**
 **https://myapp.local/up** (Health check)
-**https://myapp.local/grafana/** (Grafana login v terminalu)
-**https://myapp.local/prometheus/**(Prometheus login v terminalu)
+**https://myapp.local/grafana/** (Grafana login podatki v terminalu)
+**https://myapp.local/prometheus/** (Prometheus login podatki v terminalu)
 
 ## Ostale Vagrant komande
 
 - ``` vagrant halt ```(ustvai VM)
 - ``` vagrant up ```(zažene Vm brez provisioning razen pri prvem zagonu)
 - ``` vagrant ssh ``` (SSH od VM)
-- ``` vagrant reload ```(ekvivalent če kličemo vagrant halt potem vagrant up,provisinioning ne bo ponovno zagnan,zato moramo uporabiti --provision)
+- ``` vagrant reload ```(ekvivalent če kličemo ```vagrant halt ``` potem ``` vagrant up ```,provisinioning ne bo ponovno zagnan,zato moramo uporabiti --provision)
 - ``` vagrant up --provision ```(zažene vse provisionarje)
-- ``` vagrant destroy -f ```(Izbriše vagrant)
+- ``` vagrant destroy -f ```(ustavi/izbriše vagrant mašino ter še podatke oz.vire,ki so bili ustvarjeni med pospopkom ustvarjanja Vagrant)
 
 # VAGRANT SLIKE IN POSNETKI
 
