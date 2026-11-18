@@ -22,11 +22,11 @@ Za virtualko uporabimo Ubuntu 24.04 box in provision skripte ki:
 
 ## Varnost
 
-  - **Varnost** Netwowrk: UFW firewall blokira ves vhodni promet razen na vratih 22,80,443,baze in monitoring servisi poslušajo samo na localhost,fail2ban za SSH in nginx basic-auth
-  - **SSH**: root login disabled,max 4 poskusi,avtentikacijo samo z ključem
-  - **Brute force zaščita**:
-  - **Skrivnosti**: naključno generirane na okolje;nikoli "hardcoded"(Bza,Redis,SECRET_KEY_BASE in admin gesla),shranjeni v /etc/myapp z omejenimi pravicami(root:deploy 640 env file,root 600 credentials file)
-  - **TLS**:  ves zunanji promet iz HTTPS;HTTP preusmeri na HTTPS,2 načina mkcert(lokalno zaupan CA za development) in letsencrypt(pravi certifikati prek Cloudflare DNS challenge z auto-renewa- hook)
+  - **Netwowrk**: UFW firewall blokira ves vhodni promet razen na vratih 22,80,443,baze in monitoring servisi poslušajo samo na localhost,fail2ban za SSH in nginx basic-auth
+  - **SSH**: Root login disabled,max 4 poskusi,avtentikacijo samo z ključem
+  - **Brute force zaščita**: fail2ban prepoveduje dostop za  sshd in nginx-http-auth(5 poskusov - 1 hour ban)
+  - **Skrivnosti**: Naključno generirane na okolje;nikoli "hardcoded"(Bza,Redis,SECRET_KEY_BASE in admin gesla),shranjeni v /etc/myapp z omejenimi pravicami(root:deploy 640 env file,root 600 credentials file)
+  - **TLS**: Ves zunanji promet iz HTTPS;HTTP preusmeri na HTTPS,2 načina mkcert(lokalno zaupan CA za development) in letsencrypt(pravi certifikati prek Cloudflare DNS challenge z auto-renewa- hook)
   - **Kernel**: SYN cookies,reverse-path filterting in ICMP redirect protekcija prek sysctl
 ## Monitoring and Logging
 
@@ -34,11 +34,20 @@ Za virtualko uporabimo Ubuntu 24.04 box in provision skripte ki:
   - Prometheus z node,PostgreSQL,redis in nginx exporterji
   - Persisent journald z storage size cap
   - Grafana z "data sources" in 3 community dashboards, ki so avtomatsko provizionirani
-  - 
+  - **Grafana** vizualizira Prometheus(metrics) in Loki(logs).Provisioned dashboard Node Exporter FUll(1860),PostgreSQL(9628),Redis(11835)
+  - **Exporters** izpostavi/razkirje metrike za komponente, ki to ne morejo same
+        - Export            Port        Metrics
+          node-exporter     9100        CPU,RAM,disk,omrežje
+          postgres-exporter 9187        povezave,transkacije,velikost PB
+          redis-exporter    9121        memory,hit rate,clients
+          nginx-exporter    9113        povezave,zahteve
+  - **Alloy** zbira journal/dnevnik od systemd in loga datoteke in jih pošlje Loki.
+  - **Promethueus** "scrapa" /metrics od vsakega exporterja vsakih 15s in shrani time series(7 dnevna shramba/zadrževanje)
+
 
 ## Backups
 
-  - Vsakodnevni pg_dump prek systemd timer,7 dnevnno zadržanje,en varnostna kopija ustvarjena ob provisionu
+  - Vsakodnevni pg_dump prek systemd timerja,7 dnevnno zadržanje,ena varnostna kopija ustvarjena ob provisionu
 
 ## Prilagajanje virov
 
@@ -84,15 +93,26 @@ sudo security add-trusted-cert -d -r trustRoot \
 ```
 ## Gremo na spletno stran
 
-greste na spletno stran **https://myapp.local/**
+**https://myapp.local/**
+**https://myapp.local/up** (Health check)
+**https://myapp.local/grafana/** (Grafana login v terminalu)
+**https://myapp.local/prometheus/**(Prometheus login v terminalu)
 
 ## Ostale Vagrant komande
 
-- ```bash vagrant halt ```(ustvai VM)
-- ```bash vagrant up ```(zažene Vm brez provisioning razen pri prvem zagonu)
-- vagrant ssh (SSH od VM)
-- ```bash vagrant reload ```(ekvivalent če kličemo vagrant halt potem vagrant up,provisinioning ne bo ponovno zagnan,zato moramo uporabiti --provision)
-- ```bash vagrant up --provision ```(zažene vse provisionarje)
-- ```bash vagrant destroy -f ```(Izbriše vagrant)
+- ``` vagrant halt ```(ustvai VM)
+- ``` vagrant up ```(zažene Vm brez provisioning razen pri prvem zagonu)
+- ``` vagrant ssh ``` (SSH od VM)
+- ``` vagrant reload ```(ekvivalent če kličemo vagrant halt potem vagrant up,provisinioning ne bo ponovno zagnan,zato moramo uporabiti --provision)
+- ``` vagrant up --provision ```(zažene vse provisionarje)
+- ``` vagrant destroy -f ```(Izbriše vagrant)
 
 # VAGRANT SLIKE IN POSNETKI
+
+![screenshot] (/Users/aneltoric/Documents/Uni/DEVOPS/VMS/photos/Screenshot 2026_1)
+![screenshot] (/Users/aneltoric/Documents/Uni/DEVOPS/VMS/photos/Screenshot 2026_2)
+![screenshot] (/Users/aneltoric/Documents/Uni/DEVOPS/VMS/photos/Screenshot 2026_3)
+![screenshot] (/Users/aneltoric/Documents/Uni/DEVOPS/VMS/photos/Screenshot 2026_4)
+![screenshot] (/Users/aneltoric/Documents/Uni/DEVOPS/VMS/photos/Screenshot 2026_5)
+![screenshot] (/Users/aneltoric/Documents/Uni/DEVOPS/VMS/photos/Screenshot 2026_6)
+![screenshot] (/Users/aneltoric/Documents/Uni/DEVOPS/VMS/photos/Screenshot 2026_7)
