@@ -109,7 +109,7 @@ sudo security add-trusted-cert -d -r trustRoot \
 
 # VAGRANT SLIKE IN POSNETKI
 
-![screenshot] (/Users/aneltoric/Documents/Uni/DEVOPS/VMS/photos/Screenshot 2026_1)
+![screenshot] (/photos/Screenshot 2026_1.png)
 ![screenshot] (/Users/aneltoric/Documents/Uni/DEVOPS/VMS/photos/Screenshot 2026_2)
 ![screenshot] (/Users/aneltoric/Documents/Uni/DEVOPS/VMS/photos/Screenshot 2026_3)
 ![screenshot] (/Users/aneltoric/Documents/Uni/DEVOPS/VMS/photos/Screenshot 2026_4)
