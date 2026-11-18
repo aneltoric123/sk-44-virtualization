@@ -37,11 +37,11 @@ Za virtualko uporabimo Ubuntu 24.04 box in provision skripte ki:
   - Grafana z "data sources" in 3 community dashboards, ki so avtomatsko provizionirani
   - **Grafana** vizualizira Prometheus(metrics) in Loki(logs).Provisioned dashboard Node Exporter FUll(1860),PostgreSQL(9628),Redis(11835)
   - **Exporters** izpostavi/razkirje metrike za komponente, ki to ne morejo same
-        - Export            Port        Metrics
-          node-exporter     9100        CPU,RAM,disk,omrežje
-          postgres-exporter 9187        povezave,transkacije,velikost PB
-          redis-exporter    9121        memory,hit rate,clients
-          nginx-exporter    9113        povezave,zahteve
+    -  Export            Port        Metrics
+    - node-exporter     9100        CPU,RAM,Disk
+    - postgres-exporter 9187        povezave,transkacije,velikost PB
+    - redis-exporter    9121        memory,hit rate,clients
+    -  nginx-exporter    9113        povezave,zahteve
   - **Alloy** zbira journal/dnevnik od systemd in loga datoteke in jih pošlje Loki.
   - **Promethueus** "scrapa" /metrics od vsakega exporterja vsakih 15s in shrani time series(7 dnevna shramba/zadrževanje)
 
@@ -105,7 +105,7 @@ sudo security add-trusted-cert -d -r trustRoot \
 - ``` vagrant halt ```(ustvai VM)
 - ``` vagrant up ```(zažene Vm brez provisioning razen pri prvem zagonu)
 - ``` vagrant ssh ``` (SSH od VM)
-- ``` vagrant reload ```(ekvivalent če kličemo ```vagrant halt ``` potem ``` vagrant up ```,provisinioning ne bo ponovno zagnan,zato moramo uporabiti --provision)
+- ``` vagrant reload ```(ekvivalent če kličemo ```vagrant halt``` potem ``` vagrant up ```,provisinioning ne bo ponovno zagnan,zato moramo uporabiti --provision)
 - ``` vagrant up --provision ```(zažene vse provisionarje)
 - ``` vagrant destroy -f ```(ustavi/izbriše vagrant mašino ter še podatke oz.vire,ki so bili ustvarjeni med pospopkom ustvarjanja Vagrant)
 
