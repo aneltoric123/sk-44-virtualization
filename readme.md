@@ -11,7 +11,7 @@ Za virtualko uporabimo Ubuntu 24.04 box in provision skripte ki:
   - celotna aplikacija se lahko izbriše/ustavi in ponovno zgradi in skripte so varne da jih ponovno zaženemo ter je vgrajena trajnost(podatki shranijo ob ponovnem zagonu - samo brez --provision)
 
 
-# 2.Dodatni funkcionalnosti (bolj podbrobno)
+# 2.Dodatne funkcionalnosti (bolj podbrobno)
 
 ## Avtomatzacija
 
@@ -22,12 +22,12 @@ Za virtualko uporabimo Ubuntu 24.04 box in provision skripte ki:
 
 ## Varnost
 
-  - Network: UFW firewall blokira ves vhodni promet razen na vratih 22,80,443,baze in monitoring servisi poslušajo samo na localhost,fail2ban za SSH in nginx basic-auth
-  - SSH: root login disabled,max 4 poskusi,avtentikacijo samo z ključem
-  - Brute force zaščita:
-  - Skrivnosti: naključno generirane na okolje;nikoli "hardcoded"(Bza,Redis,SECRET_KEY_BASE in admin gesla),shranjeni v /etc/myapp z omejenimi pravicami(root:deploy 640 env file,root 600 credentials file)
-  - TLS:  ves zunanji promet iz HTTPS;HTTP preusmeri na HTTPS,2 načina mkcert(lokalno zaupan CA za development) in letsencrypt(pravi certifikati prek Cloudflare DNS challenge z auto-renewa- hook)
-  - Kernel SYN cookies,reverse-path filterting in ICMP redirect protekcija prek sysctl
+  - **Varnost** Netwowrk: UFW firewall blokira ves vhodni promet razen na vratih 22,80,443,baze in monitoring servisi poslušajo samo na localhost,fail2ban za SSH in nginx basic-auth
+  - **SSH**: root login disabled,max 4 poskusi,avtentikacijo samo z ključem
+  - **Brute force zaščita**:
+  - **Skrivnosti**: naključno generirane na okolje;nikoli "hardcoded"(Bza,Redis,SECRET_KEY_BASE in admin gesla),shranjeni v /etc/myapp z omejenimi pravicami(root:deploy 640 env file,root 600 credentials file)
+  - **TLS**:  ves zunanji promet iz HTTPS;HTTP preusmeri na HTTPS,2 načina mkcert(lokalno zaupan CA za development) in letsencrypt(pravi certifikati prek Cloudflare DNS challenge z auto-renewa- hook)
+  - **Kernel**: SYN cookies,reverse-path filterting in ICMP redirect protekcija prek sysctl
 ## Monitoring and Logging
 
   - Centraliziran logging z Loki in Grafana Alloy(journal in log shipping)
@@ -46,7 +46,7 @@ Za virtualko uporabimo Ubuntu 24.04 box in provision skripte ki:
 
 ## Testing
 
-  ### 99-smoketest.sh provisioner teče avtomatsko in preveri:
+  **99-smoketest.sh provisioner teče avtomatsko in preveri**:
   - če so vsi od 13 servisev aktivnih
   - Grafana health prek nginx
   - PostgreSQL query in Redis overjen PING
@@ -67,29 +67,32 @@ Za virtualko uporabimo Ubuntu 24.04 box in provision skripte ki:
 
 ## Git clone
 
+```bash
+
 git clone <https://github.com/aneltoric123/sk-44-virtualization>
 
 cd vagrant  
 vagrant up --provision
+```
 
 ## Sprva vam ne bo delalo in bo trajalo kar precej časa za zagon,dokler ne spremenite /etc/hosts in dodate kar vam piše v zadnji vrstici ukaza.
 
 ## Zaupamo certifikatom (da pokaže validen "lock" in morate ponovni zagnati browser)
-
+```bash
 sudo security add-trusted-cert -d -r trustRoot \
   -k /Library/Keychains/System.keychain ./certs/rootCA.pem
-
+```
 ## Gremo na spletno stran
 
 greste na spletno stran **https://myapp.local/**
 
 ## Ostale Vagrant komande
 
-- vagrant halt(ustvai VM)
-- vagrant up (zažene Vm brez provisioning razen pri prvem zagonu)
+- ```bash vagrant halt ```(ustvai VM)
+- ```bash vagrant up ```(zažene Vm brez provisioning razen pri prvem zagonu)
 - vagrant ssh (SSH od VM)
-- vagrant reload(ekvivalent če kličemo vagrant halt potem vagrant up,provisinioning ne bo ponovno zagnan,zato moramo uporabiti --provision)
-- vagrant up --provision (zažene vse provisionarje)
-- vagrant destroy -f (Izbriše vagrant)
+- ```bash vagrant reload ```(ekvivalent če kličemo vagrant halt potem vagrant up,provisinioning ne bo ponovno zagnan,zato moramo uporabiti --provision)
+- ```bash vagrant up --provision ```(zažene vse provisionarje)
+- ```bash vagrant destroy -f ```(Izbriše vagrant)
 
 # VAGRANT SLIKE IN POSNETKI
